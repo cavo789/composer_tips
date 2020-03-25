@@ -17,6 +17,8 @@
 
 ## Adding local packages
 
+> [Official doc](https://getcomposer.org/doc/05-repositories.md#path)
+
 Imagine you've a tree structure like this:
 
 ```text
@@ -54,7 +56,19 @@ In your project `marknotes\composer.json` file, change two settings:
 
 Now, run a `composer install` to install that new package in your project. 
 
-Curious? Go to your project, navigate in the `vendor` folder and you'll see that the package is a symbolic link to your local package.
+Curious? Go to your project, navigate in the `vendor` folder and you'll see that the package is a *NTFS junction* (similar to a symbolic link) to your local package. We can force a symlink like below but, then, `composer install` should be started from a DOS Prompt under Admin privileges.
+
+```json
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../pandoc/",
+      "options": {
+        "symlink": true
+      }
+    }
+  ]
+```
 
 Nice thing: any changes in your package is therefore immediately done in your project. **Really handy when you develop the package and the project that uses it at the same time.**
 
@@ -78,7 +92,8 @@ composer config --list
 
 In the output, make sure that:
 
-* `repositories.packagist.org.url`: make sure you're using `https`. If not, you can force it by running `composer config --global repo.packagist composer https://packagist.org`.
+* `repositories.packagist.org.url`: make sure you're using `https`. If not, you can force it by running `composer config --global repo.packagist composer https://packagist.org`
+* `github-protocols`: we can force `https` and avoid timeout f.i. if `ssh` can't be used on your network. Force `https` by running `composer config --global github-protocols https` (note: seems to be only for `GitHub.com`)
 
 ```text
 [repositories.packagist.org.type] composer
