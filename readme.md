@@ -8,12 +8,15 @@
 * [Composer cheat sheet](https://composer.json.jolicode.com/)
 
 * [Adding local packages](#adding-local-packages)
+* [Get information's about installed packages](#get-informations-about-installed-packages)
 * [Update on dev, install on prod](#update-on-dev-install-on-prod)
 * [Get the list of outdated packages without installing them](#get-the-list-of-outdated-packages-without-installing-them)
 * [Troubleshooting](#troubleshooting)
   * [Self-update](#self-update)
   * [Config](#config)
   * [Diagnose](#diagnose)
+  * [openssl extension is required](#openssl-extension-is-required)
+  * [mbstring](#mbstring)
   * [Composer is slow](#composer-is-slow)
     * [Disable Xdebug](#disable-xdebug)
     * [Get more informations](#get-more-informations)
@@ -230,6 +233,30 @@ Checks common errors to help debugging problems ([official doc](https://getcompo
 composer diagnose
 ```
 
+### openssl extension is required
+
+If you get the following error when f.i. running a `composer update`, just think to enable the `openssl` extension in your `php.ini`.
+
+```bash
+[Composer\Exception\NoSslException]
+  The openssl extension is required for SSL/TLS protection but is not available. If you can not enable the openssl ex
+  tension, you can disable this error, at your own risk, by setting the 'disable-tls' option to true.
+```
+
+Under Dos, run `php --info | more` and pay attention to the `Loaded Configuration File` configuration item. You'll see there the name of the loaded `php.ini`.
+
+Open that file with Notepad, search for the `extension=openssl` line and remove the `;` at the first position.
+
+Save and close.
+
+### mbstring
+
+The error below is like the [openssl one](#openssl-extension-is-required). The extension to enable is `mbstring`.
+
+```bash
+the requested PHP extension mbstring is missing from your system
+```
+
 ### Composer is slow
 
 #### Disable Xdebug
@@ -293,7 +320,7 @@ Running 1.10.1 (2020-03-13 20:34:27) with PHP 7.2.18 on Windows NT / 10.0
 [173.7MiB/1.56s] Reading ./composer.lock
 [173.7MiB/1.56s] Generating autoload files
 [173.6MiB/1.60s] Memory usage: 173.61MiB (peak: 192.02MiB), time: 1.6s
-``` 
+```
 
 ## License
 
