@@ -1,26 +1,28 @@
-![Banner](images/banner.png)
+﻿![Banner](./images/banner.png)
 
 # Composer tips
 
 > Some tips & tricks for Composer
 
-* [Official documentation](https://getcomposer.org/doc/)
-* [Composer cheat sheet](https://composer.json.jolicode.com/)
-
+<!-- table-of-contents - start -->
 * [Adding local packages](#adding-local-packages)
-* [Get information's about installed packages](#get-informations-about-installed-packages)
-* [Update on dev, install on prod](#update-on-dev-install-on-prod)
-* [Get the list of outdated packages without installing them](#get-the-list-of-outdated-packages-without-installing-them)
+    * [Adding local packages](#adding-local-packages)
+    * [Get information's about installed packages](#get-informations-about-installed-packages)
+    * [Get the list of outdated packages without installing them](#get-the-list-of-outdated-packages-without-installing-them)
+    * [Update on dev, install on prod](#update-on-dev-install-on-prod)
+* [Tools](#tools)
+    * [Security scanner](#security-scanner)
 * [Troubleshooting](#troubleshooting)
-  * [Self-update](#self-update)
-  * [Config](#config)
-  * [Diagnose](#diagnose)
-  * [openssl extension is required](#openssl-extension-is-required)
-  * [mbstring](#mbstring)
-  * [Composer is slow](#composer-is-slow)
-    * [Disable Xdebug](#disable-xdebug)
-    * [Get more informations](#get-more-informations)
+    * [Composer is slow](#composer-is-slow)
+       * [Disable xDebug](#disable-xdebug)
+       * [Get more informations](#get-more-informations)
+    * [Diagnose](#diagnose)
+    * [Display the config](#display-the-config)
+    * [mbstring](#mbstring)
+    * [openssl extension is required](#openssl-extension-is-required)
+    * [Self-update](#self-update)
 * [License](#license)
+<!-- table-of-contents - end -->
 
 ## Adding local packages
 
@@ -61,7 +63,7 @@ In your project `marknotes\composer.json` file, change two settings:
   }
 ```
 
-Now, run a `composer install` to install that new package in your project. 
+Now, run a `composer install` to install that new package in your project.
 
 Curious? Go to your project, navigate in the `vendor` folder and you'll see that the package is a *NTFS junction* (similar to a symbolic link) to your local package. We can force a symlink like below but, then, `composer install` should be started from a DOS Prompt under Admin privileges.
 
@@ -79,7 +81,64 @@ Curious? Go to your project, navigate in the `vendor` folder and you'll see that
 
 Nice thing: any changes in your package is therefore immediately done in your project. **Really handy when you develop the package and the project that uses it at the same time.**
 
-## Get information's about installed packages
+### Adding local packages
+
+> [Official doc](https://getcomposer.org/doc/05-repositories.md#path)
+
+Imagine you've a tree structure like this:
+
+```text
+c:\christophe\repositories\
+    |-- pandoc                  your package
+        |-- composer.json           "name": "avonture/pandoc"
+    |-- marknotes               your project
+        |-- composer.json
+```
+
+The `pandoc` package defined a package called `avonture/pandoc` and you wish to use it in the `marknotes` project.
+
+**So, in short, you want to use a local package in your project.**
+
+In your project `marknotes\composer.json` file, change two settings:
+
+1. In the list of repositories, add a `path` entry and set the `url` to the relative path to the package so:
+
+```json
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../pandoc/"
+    }
+  ]
+```
+
+2. Then add your package in the `require` list like this:
+
+```json
+  "require": {
+    "avonture/pandoc": "dev-master"
+  }
+```
+
+Now, run a `composer install` to install that new package in your project.
+
+Curious? Go to your project, navigate in the `vendor` folder and you'll see that the package is a *NTFS junction* (similar to a symbolic link) to your local package. We can force a symlink like below but, then, `composer install` should be started from a DOS Prompt under Admin privileges.
+
+```json
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../pandoc/",
+      "options": {
+        "symlink": true
+      }
+    }
+  ]
+```
+
+Nice thing: any changes in your package is therefore immediately done in your project. **Really handy when you develop the package and the project that uses it at the same time.**
+
+### Get information's about installed packages
 
 Show information about installed packages.
 
@@ -121,15 +180,7 @@ theseer/tokenizer                  1.1.3   A small library for converting tokeni
 webmozart/assert                   1.4.0   Assertions to validate method input/output with nice error messages.
 ```
 
-## Update on dev, install on prod
-
-On the production server, to make sure to install exactly the same dependencies than on your last dev installation, prefer to use `composer install`. Composer will then install the same version as defined in the `composer.lock` file and not, like with `composer update` the last available version for all your dependencies.
-
-To make sure your `composer.lock` file is up-to-date before going to production, run a `composer validate` so `composer.lock` is refreshed.
-
-`composer install` will retrieve version information's from `composer.lock`.
-
-## Get the list of outdated packages without installing them
+### Get the list of outdated packages without installing them
 
 Shows a list of installed packages that have updates available
 
@@ -158,112 +209,31 @@ theseer/tokenizer                 1.1.3   dev-master 901c88d A small library for
 webmozart/assert                  1.4.0   dev-master e3be5e4 Assertions to validate method input/output with nice error messages.
 ```
 
+### Update on dev, install on prod
+
+On the production server, to make sure to install exactly the same dependencies than on your last dev installation, prefer to use `composer install`. Composer will then install the same version as defined in the `composer.lock` file and not, like with `composer update` the last available version for all your dependencies.
+
+To make sure your `composer.lock` file is up-to-date before going to production, run a `composer validate` so `composer.lock` is refreshed.
+
+`composer install` will retrieve version information's from `composer.lock`.
+
+## Tools
+
+### Security scanner
+
+Online tool, scan the `composer.lock` file, get the list of used dependencies and detect if somes of them have vulnerabilities.
+
+[https://security.symfony.com/](https://security.symfony.com/)
+
 ## Troubleshooting
-
-### Self-update
-
-Make sure you're using the latest version of Composer.
-
-```bash
-composer self-update
-```
-
-### Config
-
-Display the list of configuration options of Composer.
-
-```bash
-composer config --list
-```
-
-In the output, make sure that:
-
-* `repositories.packagist.org.url`: make sure you're using `https`. If not, you can force it by running `composer config --global repo.packagist composer https://packagist.org`
-* `github-protocols`: we can force `https` and avoid timeout f.i. if `ssh` can't be used on your network. Force `https` by running `composer config --global github-protocols https` (note: seems to be only for `GitHub.com`)
-
-```text
-[repositories.packagist.org.type] composer
-[repositories.packagist.org.url] https?://repo.packagist.org
-[repositories.packagist.org.allow_ssl_downgrade] true
-[process-timeout] 300
-[use-include-path] false
-[preferred-install] auto
-[notify-on-install] true
-[github-protocols] [https, ssh]
-[vendor-dir] vendor (C:\Christophe\Repository\Sample/vendor)
-[bin-dir] {$vendor-dir}/bin (C:\Christophe\Repository\Sample/vendor/bin)
-[cache-dir] C:/Users/Christophe/AppData/Local/Composer
-[data-dir] C:/Users/Christophe/AppData/Roaming/Composer
-[cache-files-dir] {$cache-dir}/files (C:/Users/Christophe/AppData/Local/Composer/files)
-[cache-repo-dir] {$cache-dir}/repo (C:/Users/Christophe/AppData/Local/Composer/repo)
-[cache-vcs-dir] {$cache-dir}/vcs (C:/Users/Christophe/AppData/Local/Composer/vcs)
-[cache-ttl] 15552000
-[cache-files-ttl] 15552000
-[cache-files-maxsize] 300MiB (314572800)
-[bin-compat] auto
-[discard-changes] false
-[autoloader-suffix]
-[sort-packages] false
-[optimize-autoloader] false
-[classmap-authoritative] false
-[apcu-autoloader] false
-[prepend-autoloader] true
-[github-domains] [github.com]
-[bitbucket-expose-hostname] true
-[disable-tls] false
-[secure-http] true
-[cafile]
-[capath]
-[github-expose-hostname] true
-[gitlab-domains] [gitlab.com]
-[store-auths] prompt
-[archive-format] tar
-[archive-dir] .
-[htaccess-protect] true
-[use-github-api] true
-[lock] true
-[home] C:/Users/Christophe/AppData/Roaming/Composer
-```
-
-### Diagnose
-
-Checks common errors to help debugging problems ([official doc](https://getcomposer.org/doc/03-cli.md#diagnose))
-
-```bash
-composer diagnose
-```
-
-### openssl extension is required
-
-If you get the following error when f.i. running a `composer update`, just think to enable the `openssl` extension in your `php.ini`.
-
-```bash
-[Composer\Exception\NoSslException]
-  The openssl extension is required for SSL/TLS protection but is not available. If you can not enable the openssl ex
-  tension, you can disable this error, at your own risk, by setting the 'disable-tls' option to true.
-```
-
-Under Dos, run `php --info | more` and pay attention to the `Loaded Configuration File` configuration item. You'll see there the name of the loaded `php.ini`.
-
-Open that file with Notepad, search for the `extension=openssl` line and remove the `;` at the first position.
-
-Save and close.
-
-### mbstring
-
-The error below is like the [openssl one](#openssl-extension-is-required). The extension to enable is `mbstring`.
-
-```bash
-the requested PHP extension mbstring is missing from your system
-```
 
 ### Composer is slow
 
-#### Disable Xdebug
+#### Disable xDebug
 
-When Xdebug is enabled on CLI, composer will run in a non-optimized way.
+When xDebug is enabled on CLI, composer will run in a non-optimized way.
 
-To detect if Xdebug is enable, run `php -m | findstr xdebug` on the command prompt. If you don't see `xdebug` as the result of the command, it means that the xdebug module isn't loaded and this is fine.
+To detect if xDebug is enable, run `php -m | findstr xdebug` on the command prompt. If you don't see `xdebug` as the result of the command, it means that the xDebug module isn't loaded and this is fine.
 
 #### Get more informations
 
@@ -320,6 +290,103 @@ Running 1.10.1 (2020-03-13 20:34:27) with PHP 7.2.18 on Windows NT / 10.0
 [173.7MiB/1.56s] Reading ./composer.lock
 [173.7MiB/1.56s] Generating autoload files
 [173.6MiB/1.60s] Memory usage: 173.61MiB (peak: 192.02MiB), time: 1.6s
+```
+
+### Diagnose
+
+Checks common errors to help debugging problems ([official doc](https://getcomposer.org/doc/03-cli.md#diagnose))
+
+```bash
+composer diagnose
+```
+
+### Display the config
+
+Display the list of configuration options of Composer.
+
+```bash
+composer config --list
+```
+
+In the output, make sure that:
+
+* `repositories.packagist.org.url`: make sure you're using `https`. If not, you can force it by running `composer config --global repo.packagist composer https://packagist.org`
+* `github-protocols`: we can force `https` and avoid timeout f.i. if `ssh` can't be used on your network. Force `https` by running `composer config --global github-protocols https` (note: seems to be only for `GitHub.com`)
+
+```text
+[repositories.packagist.org.type] composer
+[repositories.packagist.org.url] https?://repo.packagist.org
+[repositories.packagist.org.allow_ssl_downgrade] true
+[process-timeout] 300
+[use-include-path] false
+[preferred-install] auto
+[notify-on-install] true
+[github-protocols] [https, ssh]
+[vendor-dir] vendor (C:\Christophe\Repository\Sample/vendor)
+[bin-dir] {$vendor-dir}/bin (C:\Christophe\Repository\Sample/vendor/bin)
+[cache-dir] C:/Users/Christophe/AppData/Local/Composer
+[data-dir] C:/Users/Christophe/AppData/Roaming/Composer
+[cache-files-dir] {$cache-dir}/files (C:/Users/Christophe/AppData/Local/Composer/files)
+[cache-repo-dir] {$cache-dir}/repo (C:/Users/Christophe/AppData/Local/Composer/repo)
+[cache-vcs-dir] {$cache-dir}/vcs (C:/Users/Christophe/AppData/Local/Composer/vcs)
+[cache-ttl] 15552000
+[cache-files-ttl] 15552000
+[cache-files-maxsize] 300MiB (314572800)
+[bin-compat] auto
+[discard-changes] false
+[autoloader-suffix]
+[sort-packages] false
+[optimize-autoloader] false
+[classmap-authoritative] false
+[apcu-autoloader] false
+[prepend-autoloader] true
+[github-domains] [github.com]
+[bitbucket-expose-hostname] true
+[disable-tls] false
+[secure-http] true
+[cafile]
+[capath]
+[github-expose-hostname] true
+[gitlab-domains] [gitlab.com]
+[store-auths] prompt
+[archive-format] tar
+[archive-dir] .
+[htaccess-protect] true
+[use-github-api] true
+[lock] true
+[home] C:/Users/Christophe/AppData/Roaming/Composer
+```
+
+### mbstring
+
+The error below is like the [openssl one](#openssl-extension-is-required). The extension to enable is `mbstring`.
+
+```bash
+the requested PHP extension mbstring is missing from your system
+```
+
+### openssl extension is required
+
+If you get the following error when f.i. running a `composer update`, just think to enable the `openssl` extension in your `php.ini`.
+
+```bash
+[Composer\Exception\NoSslException]
+  The openssl extension is required for SSL/TLS protection but is not available. If you can not enable the openssl ex
+  tension, you can disable this error, at your own risk, by setting the 'disable-tls' option to true.
+```
+
+Under Dos, run `php --info | more` and pay attention to the `Loaded Configuration File` configuration item. You'll see there the name of the loaded `php.ini`.
+
+Open that file with Notepad, search for the `extension=openssl` line and remove the `;` at the first position.
+
+Save and close.
+
+### Self-update
+
+Make sure you're using the latest version of Composer.
+
+```bash
+composer self-update
 ```
 
 ## License
