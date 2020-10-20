@@ -1,7 +1,6 @@
-![Banner](images/banner.png)
 
 # Composer tips
 
-> Some tips & tricks for Composer
+![Banner](./banner.svg)
 
 <!-- concat-md::toc -->

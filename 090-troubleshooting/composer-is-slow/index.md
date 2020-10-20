@@ -1,10 +1,60 @@
 # Composer is slow
 
-## Disable xDebug
+## Things to do
+
+### Make sure to use the latest version of Composer
+
+> [https://getcomposer.org/doc/03-cli.md#self-update-selfupdate-](https://getcomposer.org/doc/03-cli.md#self-update-selfupdate-)
+
+Don't use an old version, upgrade your current version of Composer by running
+
+```bash
+composer self-update
+```
+
+### Disable xDebug
+
+> [https://getcomposer.org/doc/articles/troubleshooting.md#xdebug-impact-on-composer](https://getcomposer.org/doc/articles/troubleshooting.md#xdebug-impact-on-composer)
 
 When xDebug is enabled on CLI, composer will run in a non-optimized way.
 
 To detect if xDebug is enable, run `php -m | findstr xdebug` on the command prompt. If you don't see `xdebug` as the result of the command, it means that the xDebug module isn't loaded and this is fine.
+
+### Use https instead http
+
+Prefer `https://packagist.org` on `http`. Run the next statement and make sure you're using the secured protocol:
+
+```bash
+composer config --editor --global
+```
+
+### Install prestissimo
+
+> [https://github.com/hirak/prestissimo](https://github.com/hirak/prestissimo)
+
+Once installed, `Prestissimo` will start during any `composer install` or `composer update` statement and will download, in parallel, any needed librairies. This done, composer will start to make his job; loading everything from the cache.
+
+`Prestissimo` will thus speed up the process of downloading packages.
+
+```bash
+composer global require hirak/prestissimo
+```
+
+* Make sure curl is loaded in your `php.ini` (run `php --ini` to determine the full path of that file),
+* If you get the `SSL certificate problem: unable to get local issuer certificate:` when running `composer update` (see https://github.com/composer/composer/issues/6855):
+   * Download the `cacert.pem` file from [https://curl.haxx.se/ca/cacert.pem](https://curl.haxx.se/ca/cacert.pem),
+   * Save the file on your disk (`C:\Composer\cacert.pem` f.i.),
+   * With your File Explorer, right-click on the download file and make sure the file isn't blocked,
+   * Edit `php.ini` and add `curl.cainfo = "C:\Composer\cacert.pem"`,
+   * Restart your apache server (optional for CLI scripts)
+
+## Update only the required library
+
+If you wish to only update one library, just run the following command:
+
+```bash
+composer update vendor/package --with-dependencies
+```
 
 ## Get more informations
 
