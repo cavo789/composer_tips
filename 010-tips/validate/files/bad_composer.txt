@@ -1,0 +1,13 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Avonture\\Classes\\": "/src/classes/",
+            "Avonture\\Events\\": "/src/Events/",
+            "Avonture\\Listeners\\": "/src/Listeners/",
+            "Avonture\\Listeners\\NewCustomer\\": "/src/Listeners/NewCustomer/",
+            "Avonture\\": [
+                "src/"
+            ]
+        }
+    }
+}

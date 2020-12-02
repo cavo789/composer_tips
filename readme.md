@@ -2,7 +2,7 @@
 <!-- Don't modify this file manually (you'll loose your changes) -->
 <!-- but run the tool once more -->
 
-<!-- Last refresh date: 2020-10-20 12:47:54 -->
+<!-- Last refresh date: 2020-12-02 23:14:22 -->
 
 <!-- below, content of ./index.md -->
 
@@ -16,6 +16,7 @@
   * [Get information's about installed packages](#get-informations-about-installed-packages)
   * [Get the list of outdated packages without installing them](#get-the-list-of-outdated-packages-without-installing-them)
   * [Update on dev, install on prod](#update-on-dev-install-on-prod)
+  * [Validate your file and your paths](#validate-your-file-and-your-paths)
 * [Tools](#tools)
   * [Security scanner](#security-scanner)
 * [Troubleshooting](#troubleshooting)
@@ -237,6 +238,42 @@ On the production server, to make sure to install exactly the same dependencies 
 To make sure your `composer.lock` file is up-to-date before going to production, run a `composer validate` so `composer.lock` is refreshed.
 
 `composer install` will retrieve version information's from `composer.lock`.
+
+<!-- below, content of ./010-tips/validate/readme.md -->
+
+### Validate your file and your paths
+
+By running `composer validate` you can validate the structure of your file but just that, just the structure. That process is also called `lint`.
+
+Validate will verify if required nodes are present, if the node names are correct (`require-dev` and not `require_dev` f.i.).
+
+Check the code here below:
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "Avonture\\Classes\\": "/src/classes/",
+            "Avonture\\Events\\": "/src/Events/",
+            "Avonture\\Listeners\\": "/src/Listeners/",
+            "Avonture\\Listeners\\NewCustomer\\": "/src/Listeners/NewCustomer/",
+            "Avonture\\": [
+                "src/"
+            ]
+        }
+    }
+}
+```
+
+`composer validate` will tells that the file is correct (and it is, but only in terms of syntax)
+
+**But there is well a problem!**
+
+Pay attention to the value `/src/classes/`. The word `classes` is not capitalized like the others. On the disk, the folder is called `Classes` so there is here a case problem, lower case in the json and with the first capitalized letter on the disk.
+
+The solution: we can highlight this problem by running `composer dump-autoload --optimize `.
+
+![Composer validate](./010-tips/validate/images/composer_validate.png)
 
 <!-- below, content of ./030-tools/index.md -->
 
