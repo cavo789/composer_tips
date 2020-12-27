@@ -2,7 +2,7 @@
 <!-- Don't modify this file manually (you'll loose your changes) -->
 <!-- but run the tool once more -->
 
-<!-- Last refresh date: 2020-12-02 23:14:22 -->
+<!-- Last refresh date: 2020-12-27 16:41:12 -->
 
 <!-- below, content of ./index.md -->
 
@@ -33,6 +33,7 @@
   * [mbstring](#mbstring)
   * [openssl extension is required](#openssl-extension-is-required)
   * [Self-update](#self-update)
+* [Extra](#extra)
 * [License](#license)
 <!-- table-of-contents - end -->
 
@@ -514,6 +515,15 @@ Make sure you're using the latest version of Composer.
 ```bash
 composer self-update
 ```
+
+<!-- below, content of ./900-extra/readme.md -->
+
+## Extra
+
+* [24 Tips for Using Composer Efficiently](https://blog.martinhujer.cz/17-tips-for-using-composer-efficiently/)
+  * *You should commit `composer.lock` to git in **applications** and not for **libraries**.* (tips #5 and #6)
+  * *Sort packages in `require` and `require-dev` by name to reduce merge conflicts.* (tip #8)
+  * *You can define other types of dependencies in composer.json*: specify that you're using f.i. `ext-pdo_mysql` so everyone who will install your project will immediately be aware of this (tip #12)
 
 <!-- below, content of ./999-License/index.md -->
 
